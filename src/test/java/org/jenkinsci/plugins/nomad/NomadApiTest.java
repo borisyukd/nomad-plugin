@@ -14,7 +14,7 @@ import java.util.ArrayList;
  */
 public class NomadApiTest {
 
-    private NomadApi nomadApi = new NomadApi("http://localhost");
+    private NomadApi nomadApi = new NomadApi("http://localhost", "");
     private List<NomadConstraintTemplate> constraintTest = new ArrayList<NomadConstraintTemplate>();
     private NomadSlaveTemplate slaveTemplate = new NomadSlaveTemplate(
             "300", "256", "100",
@@ -26,6 +26,7 @@ public class NomadApiTest {
     private NomadCloud nomadCloud = new NomadCloud(
             "nomad",
             "nomadUrl",
+            "nomadToken",
             "jenkinsUrl",
             "slaveUrl",
             Collections.singletonList(slaveTemplate));

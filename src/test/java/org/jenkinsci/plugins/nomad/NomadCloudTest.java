@@ -19,6 +19,7 @@ public class NomadCloudTest {
     private NomadCloud nomadCloud = new NomadCloud(
             "nomad",
             "nomadUrl",
+            "nomadToken",
             "jenkinsUrl",
             "slaveUrl",
             Collections.singletonList(slaveTemplate));

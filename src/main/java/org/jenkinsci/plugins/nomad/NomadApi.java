@@ -24,10 +24,13 @@ public final class NomadApi {
 
     private final String nomadApi;
 
+    private final String nomadToken;
+
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    public NomadApi(String nomadApi) {
+    public NomadApi(String nomadApi, String nomadToken) {
         this.nomadApi = nomadApi;
+        this.nomadToken = nomadToken;
     }
 
     public void startSlave(String slaveName, String jnlpSecret, NomadSlaveTemplate template) {
@@ -42,12 +45,20 @@ public final class NomadApi {
 
         try {
             RequestBody body = RequestBody.create(JSON, slaveJob);
-            Request request = new Request.Builder()
-                    .url(this.nomadApi + "/v1/job/" + slaveName + "?region=" + template.getRegion())
-                    .put(body)
-                    .build();
-
-            client.newCall(request).execute().body().close();
+	    if (this.nomadToken.equals("")) {
+                Request request = new Request.Builder()
+                        .url(this.nomadApi + "/v1/job/" + slaveName + "?region=" + template.getRegion())
+                        .put(body)
+                        .build();
+                client.newCall(request).execute().body().close();
+	    } else {
+                Request request = new Request.Builder()
+                        .url(this.nomadApi + "/v1/job/" + slaveName + "?region=" + template.getRegion())
+                        .header("X-Nomad-Token", this.nomadToken)
+                        .put(body)
+                        .build();
+                client.newCall(request).execute().body().close();
+	    }
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
@@ -56,13 +67,21 @@ public final class NomadApi {
 
     public void stopSlave(String slaveName) {
 
-        Request request = new Request.Builder()
-                .url(this.nomadApi + "/v1/job/" + slaveName)
-                .delete()
-                .build();
-
         try {
-            client.newCall(request).execute().body().close();
+	    if (this.nomadToken.equals("")) {
+                Request request = new Request.Builder()
+                        .url(this.nomadApi + "/v1/job/" + slaveName)
+                        .delete()
+                        .build();
+                client.newCall(request).execute().body().close();
+            } else {
+                Request request = new Request.Builder()
+                        .url(this.nomadApi + "/v1/job/" + slaveName)
+                        .header("X-Nomad-Token", this.nomadToken)
+                        .delete()
+                        .build();
+                client.newCall(request).execute().body().close();
+            }
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
